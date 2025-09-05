@@ -10,4 +10,4 @@ COPY . /app/
 # Install dependencies using uv
 RUN uv pip install --no-cache --system -e .
 
-CMD ["python", "-m", "cfupdater.cfupdater"]
+ENTRYPOINT ["python", "-m", "cfupdater.cfupdater"]
