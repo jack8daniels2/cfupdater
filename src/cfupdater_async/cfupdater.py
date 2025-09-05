@@ -53,7 +53,7 @@ class CloudflareDNS:
     async def get_my_ip(self) -> Optional[str]:
         """Get the current public IP address using Cloudflare's Speed Test API."""
         try:
-            async with self.session.get("https://speed.cloudflare.com/meta") as response:
+            async with self.session.get(CF_URL) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get("clientIp")
