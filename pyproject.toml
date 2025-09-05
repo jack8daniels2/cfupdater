@@ -6,5 +6,6 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.11.14",
+    "certifi>=2025.8.3",
     "onepassword-sdk>=0.2.1",
 ]
