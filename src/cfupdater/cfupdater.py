@@ -24,6 +24,9 @@ CF_ZONE_ID_REF="op://Services/CF DNS API/zone_id"
 
 async def get_secrets():
     token = os.getenv("OP_SERVICE_ACCOUNT_TOKEN")
+    if not token:
+        logger.error("OP_SERVICE_ACCOUNT_TOKEN unset")
+        raise Exception("No OP service token provided")
     client = await Client.authenticate(auth=token, integration_name="cfupdater", integration_version="1.0")
     # Client(token=os.environ["OP_SERVICE_ACCOUNT_TOKEN"])
 
@@ -67,11 +70,15 @@ def get_interval_seconds(mode: str) -> int:
     }.get(mode, 0)
 
 def run(mode, num_runs):
-    (CF_API_KEY, CF_ZONE_ID, CF_DNS_RECORD) = asyncio.run(get_secrets())
+    try:
+        (CF_API_KEY, CF_ZONE_ID, CF_DNS_RECORD) = asyncio.run(get_secrets())
+    except Exception as e:
+        logger.fatal(f"Getting secrets raised Exception {e}")
+        return
     # Validate required configuration
     if not all([CF_API_KEY, CF_ZONE_ID, CF_DNS_RECORD]):
-        logger.error("Please set CF_API_TOKEN, CF_ZONE_ID, and CF_RECORD_NAME")
-        sys.exit(-1)
+        logger.fatal("Please set CF_API_TOKEN, CF_ZONE_ID, and CF_RECORD_NAME")
+        return
 
     main(CF_API_KEY, CF_ZONE_ID, CF_DNS_RECORD)
     if not mode:
